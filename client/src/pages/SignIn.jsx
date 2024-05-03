@@ -1,13 +1,15 @@
 import { Alert, Button, Spinner, TextInput } from 'flowbite-react'
 import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { signInFailure, signInStart, signInSuccess } from '../redux/user/userSlice'
 
 export default function SignIn() {
   const [formData, setFormData] = useState({})
-  const [error, setError] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const { loading, error } = useSelector((state) => state.user);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData({...formData, [e.target.id]: e.target.value})
@@ -16,8 +18,7 @@ export default function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      setLoading(true);
-      setError(false);
+      dispatch(signInStart())
       const response = await fetch('/api/v1/users/sign-in', {
         method: 'POST',
         headers: {
@@ -26,15 +27,14 @@ export default function SignIn() {
         body: JSON.stringify(formData),
       });
       const data = await response.json();
-      setLoading(false);
       if (data.success === false) {
-        setError(true);
+        dispatch(signInFailure(data))
         return;
       }
+      dispatch(signInSuccess(data))
       navigate('/');
     } catch (error) {
-      setLoading(false);
-      setError(true);
+      dispatch(signInFailure(error))
     }
   }
   return (
@@ -76,11 +76,13 @@ export default function SignIn() {
           <span className='text-blue-500'>Sign up</span>
         </Link>
       </div>
-      { error && (
+      { error ? (
         <Alert className='mt-5' color='failure'>
-          {'Something went wrong!'}
+          { error.message || 'something went wrong!'}
         </Alert>
+      ) : (
+        ''
       )}
     </div>
-  )
-}
+  );
+};
