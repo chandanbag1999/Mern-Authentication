@@ -142,3 +142,32 @@ export const google = asyncHandler(async (req, res) => {
         .json( new ApiResponse(200, 'User logged in successfully', loggedInUser) )
     }
 })
+
+export const updateUser = asyncHandler(async (req, res) => {
+    if (req.user.id !== req.params.id) {
+        throw new ApiError(401, 'Unauthorized')
+    }
+
+    if (req.body.password) {
+        req.body.password = bcryptjs.hashSync(req.body.password, 10)
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.params.id,
+        {
+            $set: {
+                username: req.body.username,
+                email: req.body.email,
+                password: req.body.password,
+                profilePicture: req.body.profilePicture
+            },
+        },
+        { new: true }
+    );
+
+    const updatedUser = await User.findById(user._id).select('-password')
+
+    return res
+    .status(200)
+    .json( new ApiResponse(200, 'User updated successfully', updatedUser) )
+})

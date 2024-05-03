@@ -17,7 +17,7 @@ const userSchema = new Schema({
     },
     profilePicture: {
         type: String,
-        default: 'https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg'
+        default: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdtzD0_epA0Fdr9es_j9yrgvV33knKzYOI71qZ6PGlTw&s'
     },
     
 }, {
