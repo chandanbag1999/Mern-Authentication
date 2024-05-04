@@ -1,31 +1,53 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { Link, useLocation } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+import { Button, Navbar } from 'flowbite-react'
+import { FaMoon, FaSun } from 'react-icons/fa'
+import { toggleTheme } from '../redux/theme/themeSlice'
 
 export default function Header() {
+    const dispatch = useDispatch()
+    const path = useLocation().pathname;
     const { currentUser } = useSelector((state) => state.user)
+    const { theme } = useSelector((state) => state.theme)
   return (
-    <div className='bg-slate-200'>
-        <div className='flex justify-between items-center max-w-6xl mx-auto p-3'>
-            <Link to='/'>
-                <h1 className='font-bold'>Auth App</h1>
-            </Link >
-            <ul className='flex gap-4'>
-                <Link to='/'>
-                    <li>Home</li>
-                </Link>
-                <Link to='/about'>
-                    <li>About</li>
-                </Link>
-                <Link to='/profile'>
-                    { currentUser ? (
-                        <img src={currentUser.profilePicture} alt='profile' className='h-7 w-7 rounded-full object-cover' />
+    <Navbar className='border-b-2'>
+        <Link
+            to='/'
+            className='self-center whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white'
+        >
+            <span className='px-2 py-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg text-white'>
+                Auth
+            </span>
+            App
+        </Link>
+        <div className='flex gap-2 md:order-2'>
+            <Button
+                className='w-12 h-10 hidden sm:inline'
+                color='gray'
+                pill
+                onClick={() => dispatch(toggleTheme())}
+            >
+                {theme === 'light' ? <FaSun /> : <FaMoon />}
+            </Button>
+            <Link to='/profile'>
+                { currentUser ? (
+                    <img src={currentUser.profilePicture} alt='profile' className='h-7 w-7 rounded-full object-cover' />
                     ) : (
-                        <li>sign In</li>
-                    )}
-                </Link>
-            </ul>
+                    <Button gradientDuoTone='purpleToBlue' outline>
+                        Sign In
+                    </Button>
+                )}
+            </Link>
         </div>
-    </div>
+        <Navbar.Collapse>
+            <Navbar.Link active={path === '/'} as={'div'}>
+                <Link to='/'>Home</Link>
+            </Navbar.Link>
+            <Navbar.Link active={path === '/about'} as={'div'}>
+                <Link to='/about'>About</Link>
+            </Navbar.Link>
+        </Navbar.Collapse>
+    </Navbar>
   )
 }
