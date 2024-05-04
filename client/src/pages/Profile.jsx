@@ -9,7 +9,7 @@ import {
 } from 'firebase/storage';
 import { app } from '../firebase';
 import { useDispatch } from 'react-redux';
-import { deleteUserFailure, deleteUserStart, deleteUserSuccess, updateUserFailure, updateUserStart, updateUserSuccess } from '../redux/user/userSlice';
+import { deleteUserFailure, deleteUserStart, deleteUserSuccess, signOut, updateUserFailure, updateUserStart, updateUserSuccess } from '../redux/user/userSlice';
 
 
 
@@ -95,6 +95,15 @@ export default function Profile() {
     } catch (error) {
       dispatch(deleteUserFailure(error))
     }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await fetch('/api/v1/users/sign-out');
+      dispatch(signOut())
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (
@@ -168,7 +177,12 @@ export default function Profile() {
         >
           Delete Account
         </span>
-        <span className='text-red-700 cursor-pointer'>Sign out</span>
+        <span 
+          onClick={handleSignOut} 
+          className='text-red-700 cursor-pointer'
+        >
+          Sign Out
+        </span>
       </div>
         { error ? (
           <Alert className='mt-5' color='failure'>

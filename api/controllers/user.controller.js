@@ -184,3 +184,10 @@ export const deleteUser = asyncHandler(async (req, res) => {
     .status(200)
     .json( new ApiResponse(200, 'User deleted successfully') )
 })
+
+export const signOutUser = asyncHandler(async (req, res) => {
+    return res
+    .status(200)
+    .clearCookie('access_token')
+    .json( new ApiResponse(200, 'User logged out successfully') )
+})
