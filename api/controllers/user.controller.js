@@ -171,3 +171,16 @@ export const updateUser = asyncHandler(async (req, res) => {
     .status(200)
     .json( new ApiResponse(200, 'User updated successfully', updatedUser) )
 })
+
+
+export const deleteUser = asyncHandler(async (req, res) => {
+    if (req.user.id !== req.params.id) {
+        throw new ApiError(401, 'you can delete only your account')
+    }
+
+    await User.findByIdAndDelete(req.params.id)
+
+    return res
+    .status(200)
+    .json( new ApiResponse(200, 'User deleted successfully') )
+})
