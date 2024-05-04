@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { Button, TextInput } from 'flowbite-react'
+import { Alert, Button, TextInput } from 'flowbite-react'
 import { useRef, useState, useEffect } from 'react';
 import {
   getDownloadURL,
@@ -8,16 +8,21 @@ import {
   uploadBytesResumable,
 } from 'firebase/storage';
 import { app } from '../firebase';
+import { useDispatch } from 'react-redux';
+import { updateUserFailure, updateUserStart, updateUserSuccess } from '../redux/user/userSlice';
+
 
 
 export default function Profile() {
+  const dispatch = useDispatch();
   const fileRef = useRef();
   const [image, setImage] = useState(undefined);
   const [imagePercent, setImagePercent] = useState(0);
   const [imageError, setImageError] = useState(false);
   const [formData, setFormData] = useState({});
+  const [updateSuccess, setUpdateSuccess] = useState(false);
 
-  const { currentUser } = useSelector((state) => state.user)
+  const { currentUser, loading, error } = useSelector((state) => state.user)
 
   useEffect(() => {
     if (image) {
@@ -46,12 +51,39 @@ export default function Profile() {
         );
       }
     )
+  };
+
+  const handleChange = (e) => {
+    setFormData({...formData, [e.target.id]: e.target.value})
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      dispatch(updateUserStart())
+      const response = await fetch(`/api/v1/users/update/${currentUser._id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await response.json();
+      if (data.success === false) {
+        dispatch(updateUserFailure(data))
+        return;
+      }
+      dispatch(updateUserSuccess(data))
+      setUpdateSuccess(true)
+    } catch (error) {
+      dispatch(updateUserFailure(error))
+    }
   }
 
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
-      <form className='flex flex-col gap-3'>
+      <form onSubmit={handleSubmit} className='flex flex-col gap-3'>
         <input 
           type='file'
           ref={fileRef}
@@ -67,7 +99,9 @@ export default function Profile() {
         />
         <p className='text-sm self-center'>
           {imageError ? (
-            <span className='text-red-700'>Error uploading image (file size must be less than 2 MB)</span>
+            <span className='text-red-700'>
+              Error uploading image (file size must be less than 2 MB)
+            </span>
           ) : imagePercent > 0 && imagePercent < 100 ? (
             <span className='text-slate-700'>{`Uploading: ${imagePercent} %`}</span>
           ) : imagePercent === 100 ? (
@@ -82,6 +116,7 @@ export default function Profile() {
           id='username'
           placeholder='username'
           className=' p-3 rounded-lg'
+          onChange={handleChange}
         />
         <TextInput
           defaultValue={currentUser.email}
@@ -89,21 +124,44 @@ export default function Profile() {
           id='email'
           placeholder='Email'
           className=' p-3 rounded-lg'
+          onChange={handleChange}
         />
         <TextInput
           type='password'
           id='password'
           placeholder='Password'
           className=' p-3 rounded-lg'
+          onChange={handleChange}
         />
         <Button type='submit' gradientDuoTone='purpleToBlue' outline>
-            Update
+          { loading ? (
+            <>
+              <Spinner size='sm' />
+              <span className='pl-2'>Loading...</span>
+            </>
+          ) : (
+            'Update'
+          )}
         </Button>
       </form>
       <div className="flex justify-between mt-5">
         <span className='text-red-700 cursor-pointer'>Delete Account</span>
         <span className='text-red-700 cursor-pointer'>Sign out</span>
       </div>
+        { error ? (
+          <Alert className='mt-5' color='failure'>
+            { error.message || 'something went wrong!'}
+          </Alert>
+        ) : (
+          ''
+        )}
+        { updateSuccess ? (
+          <Alert className='mt-5' color='failure'>
+            { 'User Update Successfully!' }
+          </Alert>
+        ) : (
+          ''
+        )}
     </div>
   )
 }
