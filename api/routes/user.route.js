@@ -14,4 +14,4 @@ router.route('/delete/:id').delete(verifyUser, deleteUser)
 router.route('/sign-out').get(verifyUser, signOutUser)
 
 
-export default router;
+export default router
