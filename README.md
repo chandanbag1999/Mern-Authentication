@@ -46,28 +46,28 @@ Ensure you have the following installed on your local machine:
 3. Install the dependencies for the backend:
 
    ```sh
-   cd backend
+   cd api
    npm install
    ```
 
    or
 
    ```sh
-   cd backend
+   cd api
    yarn install
    ```
 
 4. Install the dependencies for the frontend:
 
    ```sh
-   cd ../frontend
+   cd ../client
    npm install
    ```
 
    or
 
    ```sh
-   cd ../frontend
+   cd ../client
    yarn install
    ```
 
