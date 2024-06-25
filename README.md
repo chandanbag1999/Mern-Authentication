@@ -89,28 +89,28 @@ Ensure you have the following installed on your local machine:
 1. Start the backend server:
 
    ```sh
-   cd backend
+   cd api
    npm start
    ```
 
    or
 
    ```sh
-   cd backend
+   cd api
    yarn start
    ```
 
 2. Start the frontend development server:
 
    ```sh
-   cd ../frontend
+   cd ../client
    npm start
    ```
 
    or
 
    ```sh
-   cd ../frontend
+   cd ../client
    yarn start
    ```
 
