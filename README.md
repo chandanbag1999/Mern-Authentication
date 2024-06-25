@@ -118,14 +118,14 @@ Open [http://localhost:3000](http://localhost:3000) to view the application in t
 
 ## Folder Structure
 
-- `backend`: Contains the backend code
+- `api`: Contains the backend code
   - `controllers`: Request handlers for different routes
   - `models`: Mongoose models for MongoDB collections
   - `routes`: API routes
   - `middleware`: Custom middleware functions (e.g., for authentication)
   - `server.js`: Entry point of the backend application
 
-- `frontend`: Contains the frontend code
+- `client`: Contains the frontend code
   - `src`
     - `components`: Reusable React components
     - `pages`: React components for different pages
